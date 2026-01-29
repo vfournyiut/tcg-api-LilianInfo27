@@ -15,6 +15,7 @@
     "db:stop": "docker compose down",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:seed": "npm run db:generate && tsx prisma/seed.ts",
     "db:reset": "npm run db:generate && prisma migrate reset --force && npm run db:seed"
