@@ -5,6 +5,8 @@ import cors from "cors";
 
 import { authRouter } from "./auth.route";
 
+import { prisma } from "./database";
+
 // Create Express app
 export const app = express();
 
@@ -30,6 +32,18 @@ app.get("/api/health", (_req, res) => {
 
 // Auth routes
 app.use("/api/auth", authRouter);
+
+// GET /api/cards : catalogue public
+app.get("/api/cards", async (_req, res) => {
+    try {
+        const cards = await prisma.card.findMany({
+            orderBy: { pokedexNumber: "asc" }
+        });
+        res.status(200).json(cards);
+    } catch (err) {
+        res.status(500).json({ error: "Erreur serveur" });
+    }
+});
 
 // Start server only if this file is run directly (not imported for tests)
 if (require.main === module) {
