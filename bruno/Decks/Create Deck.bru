@@ -17,7 +17,7 @@ auth:bearer {
 body:json {
   {
     "name": "My Starter Deck",
-    "cards": [1, 4, 7, 25, 2, 5, 8, 26, 3, 6]
+    "cards": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   }
 }
 
@@ -29,13 +29,13 @@ script:post-response {
 
 docs {
   Create a new deck for the authenticated user.
-
+  
   Requires authentication.
-
+  
   Body:
   - name: string (required) - Name of the deck
   - cards: array of numbers (required) - Must contain exactly 10 card IDs
-
+  
   Returns:
   - 201: Deck created successfully
   - 400: Invalid input (must be exactly 10 valid card IDs)
