@@ -8,10 +8,9 @@ import {PokemonType} from "../src/generated/prisma/enums";
 async function main() {
     console.log("🌱 Starting database seed...");
 
-    await prisma.card.deleteMany();
-    await prisma.user.deleteMany();
-    await prisma.deck.deleteMany();
-    await prisma.deckCard.deleteMany();
+    await prisma.$executeRawUnsafe(
+        'TRUNCATE "DeckCard", "Deck", "User", "Card" RESTART IDENTITY CASCADE;'
+    );
 
     const hashedPassword = await bcrypt.hash("password123", 10);
 
@@ -43,20 +42,20 @@ async function main() {
     const pokemonJson = readFileSync(pokemonDataPath, "utf-8");
     const pokemonData: CardModel[] = JSON.parse(pokemonJson);
 
-    const createdCards = await Promise.all(
-        pokemonData.map((pokemon) =>
-            prisma.card.create({
-                data: {
-                    name: pokemon.name,
-                    hp: pokemon.hp,
-                    attack: pokemon.attack,
-                    type: PokemonType[pokemon.type as keyof typeof PokemonType],
-                    pokedexNumber: pokemon.pokedexNumber,
-                    imgUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.pokedexNumber}.png`,
-                },
-            })
-        )
-    );
+    const createdCards = [];
+    for (const pokemon of pokemonData) {
+        const card = await prisma.card.create({
+            data: {
+                name: pokemon.name,
+                hp: pokemon.hp,
+                attack: pokemon.attack,
+                type: PokemonType[pokemon.type as keyof typeof PokemonType],
+                pokedexNumber: pokemon.pokedexNumber,
+                imgUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.pokedexNumber}.png`,
+            },
+        });
+        createdCards.push(card);
+    }
 
     // console.log(randomCards);
     // console.log(createdCards)0*;

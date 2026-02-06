@@ -7,6 +7,8 @@ import { authRouter } from "./auth.route";
 
 import { prisma } from "./database";
 
+import { deckRouter } from "./deck.route";
+
 // Create Express app
 export const app = express();
 
@@ -33,6 +35,9 @@ app.get("/api/health", (_req, res) => {
 // Auth routes
 app.use("/api/auth", authRouter);
 
+// Decks routes
+app.use("/api/decks", deckRouter);
+
 // GET /api/cards : catalogue public
 app.get("/api/cards", async (_req, res) => {
     try {
@@ -41,6 +46,7 @@ app.get("/api/cards", async (_req, res) => {
         });
         res.status(200).json(cards);
     } catch (err) {
+        console.log(err);
         res.status(500).json({ error: "Erreur serveur" });
     }
 });

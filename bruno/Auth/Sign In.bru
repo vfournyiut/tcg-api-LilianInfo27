@@ -5,11 +5,23 @@ meta {
 }
 
 post {
-  url: sign-in
-  body: none
-  auth: inherit
+  url: {{baseUrl}}/api/auth/sign-in
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImVtYWlsIjoicmVkQGV4YW1wbGUuY29tIiwiaWF0IjoxNzcwMzE1ODI4LCJleHAiOjE3NzA5MjA2Mjh9.C7SqbXHvOb4R-DystD95TBpAZwcMzjaeeeIOuEJUvH4
+}
+
+body:json {
+  {
+    "email": "red@example.com",
+    "password": "password123"
+  }
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

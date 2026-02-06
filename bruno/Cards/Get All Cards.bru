@@ -6,7 +6,7 @@ meta {
 
 get {
   url: {{baseUrl}}/api/cards
-  body: none
+  body: json
   auth: bearer
 }
 
@@ -14,11 +14,18 @@ auth:bearer {
   token: {{token}}
 }
 
+body:json {
+  {
+    "name": "My Starter Deck",
+    "cards": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  }
+}
+
 docs {
   Get all available cards in the game.
-
+  
   Requires authentication.
-
+  
   Returns:
   - 200: List of all cards
   - 401: Unauthorized (missing or invalid token)
