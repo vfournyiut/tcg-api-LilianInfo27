@@ -27,6 +27,17 @@ app.use(express.static('public'));
 
 
 // Health check endpoint
+/**
+ * Health check endpoint.
+ *
+ * Route params: none
+ * Request body: none
+ *
+ * @param {express.Request} _req - Express request (unused).
+ * @param {express.Response} res - Express response.
+ * @returns {void} JSON response with server status.
+ * @throws {Error} When response serialization fails.
+ */
 app.get("/api/health", (_req, res) => {
     res.json({status: "ok", message: "TCG Backend Server is running"});
 });
@@ -39,6 +50,17 @@ app.use("/api/auth", authRouter);
 app.use("/api/decks", deckRouter);
 
 // GET /api/cards : catalogue public
+/**
+ * Return the public card catalog ordered by Pokedex number.
+ *
+ * Route params: none
+ * Request body: none
+ *
+ * @param {express.Request} _req - Express request (unused).
+ * @param {express.Response} res - Express response.
+ * @returns {Promise<void>} JSON response with cards or error.
+ * @throws {Error} When database operations fail.
+ */
 app.get("/api/cards", async (_req, res) => {
     try {
         const cards = await prisma.card.findMany({

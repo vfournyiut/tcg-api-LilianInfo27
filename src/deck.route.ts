@@ -5,9 +5,19 @@ import { env } from './env';
 
 export const deckRouter = Router();
 
-// POST /api/decks - Créer un deck
-// Protégé par JWT
-// Payload: { name: string, cards: number[] }
+/**
+ * Create a deck for the authenticated user.
+ *
+ * Route params: none
+ * Request body:
+ * - name: string
+ * - cards: number[] (must contain exactly 10 card ids)
+ *
+ * @param {Request} req - Express request; expects body with name and cards.
+ * @param {Response} res - Express response.
+ * @returns {Promise<Response>} JSON response with created deck or error.
+ * @throws {Error} When database operations fail.
+ */
 deckRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
     const userId = req.user?.userId;
     const { name, cards } = req.body;
@@ -45,7 +55,17 @@ deckRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
     }
 });
 
-// GET /api/decks/mine - Lister les decks de l'utilisateur connecté
+/**
+ * List decks for the authenticated user.
+ *
+ * Route params: none
+ * Request body: none
+ *
+ * @param {Request} req - Express request; uses authenticated user id.
+ * @param {Response} res - Express response.
+ * @returns {Promise<void>} JSON response with decks or error.
+ * @throws {Error} When database operations fail.
+ */
 deckRouter.get('/mine', authenticateToken, async (req: Request, res: Response) => {
     const userId = req.user?.userId;
     try {
@@ -59,7 +79,18 @@ deckRouter.get('/mine', authenticateToken, async (req: Request, res: Response) =
     }
 });
 
-// GET /api/decks/:id - Consulter un deck spécifique
+/**
+ * Get a specific deck owned by the authenticated user.
+ *
+ * Route params:
+ * - id: number (deck id)
+ * Request body: none
+ *
+ * @param {Request} req - Express request; expects params.id.
+ * @param {Response} res - Express response.
+ * @returns {Promise<Response>} JSON response with deck or error.
+ * @throws {Error} When database operations fail.
+ */
 deckRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
     const userId = req.user?.userId;
     const deckId = Number(req.params.id);
@@ -80,7 +111,20 @@ deckRouter.get('/:id', authenticateToken, async (req: Request, res: Response) =>
     }
 });
 
-// PATCH /api/decks/:id - Modifier un deck
+/**
+ * Update a deck name and/or its cards for the authenticated user.
+ *
+ * Route params:
+ * - id: number (deck id)
+ * Request body (optional):
+ * - name: string
+ * - cards: number[] (must contain exactly 10 card ids when provided)
+ *
+ * @param {Request} req - Express request; expects params.id and optional body.
+ * @param {Response} res - Express response.
+ * @returns {Promise<Response>} JSON response with updated deck or error.
+ * @throws {Error} When database operations fail.
+ */
 deckRouter.patch('/:id', authenticateToken, async (req: Request, res: Response) => {
     const userId = req.user?.userId;
     const deckId = Number(req.params.id);
@@ -117,7 +161,18 @@ deckRouter.patch('/:id', authenticateToken, async (req: Request, res: Response) 
     }
 });
 
-// DELETE /api/decks/:id - Supprimer un deck
+/**
+ * Delete a deck owned by the authenticated user.
+ *
+ * Route params:
+ * - id: number (deck id)
+ * Request body: none
+ *
+ * @param {Request} req - Express request; expects params.id.
+ * @param {Response} res - Express response.
+ * @returns {Promise<Response>} JSON response with confirmation or error.
+ * @throws {Error} When database operations fail.
+ */
 deckRouter.delete('/:id', authenticateToken, async (req: Request, res: Response) => {
     const userId = req.user?.userId;
     const deckId = Number(req.params.id);
