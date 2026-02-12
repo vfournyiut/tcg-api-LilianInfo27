@@ -6,6 +6,19 @@ import { env } from './env';
 
 export const authRouter = Router();
 
+/**
+ * Create a user account and return a JWT.
+ *
+ * Request body:
+ * - email: string
+ * - username: string
+ * - password: string
+ *
+ * @param {Request} req - Express request; expects body with email, username, password.
+ * @param {Response} res - Express response.
+ * @returns {Promise<Response>} JSON response with { token, user } or error.
+ * @throws {Error} When password hashing or database operations fail.
+ */
 authRouter.post('/sign-up', async (req: Request, res: Response) => {
     const { email, username, password } = req.body;
     if (!email || !username || !password) {
@@ -32,6 +45,18 @@ authRouter.post('/sign-up', async (req: Request, res: Response) => {
     }
 });
 
+/**
+ * Authenticate a user and return a JWT.
+ *
+ * Request body:
+ * - email: string
+ * - password: string
+ *
+ * @param {Request} req - Express request; expects body with email and password.
+ * @param {Response} res - Express response.
+ * @returns {Promise<Response>} JSON response with { token, user } or error.
+ * @throws {Error} When password comparison or database operations fail.
+ */
 authRouter.post('/sign-in', async (req: Request, res: Response) => {
     const { email, password } = req.body;
     if (!email || !password) {
