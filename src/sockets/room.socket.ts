@@ -108,7 +108,7 @@ export function setupRoomSocket(io: Server): void {
          */
         socket.on("joinRoom", async (payload: JoinRoomPayload, callback) => {
             try {
-                const { roomId, deckId, username } = payload;
+                const { roomId, deckId } = payload;
 
                 const waitingRoom = waitingRooms.get(roomId);
 

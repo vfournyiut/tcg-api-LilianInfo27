@@ -4,8 +4,7 @@ import {
     DrawCardsPayload,
     PlayCardPayload,
     AttackPayload,
-    EndTurnPayload,
-    SocketResponse,
+    EndTurnPayload
 } from "../types/game";
 
 /**

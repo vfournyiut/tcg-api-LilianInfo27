@@ -3,7 +3,6 @@ import {
     GameState,
     GamePlayer,
     GameStatus,
-    ActiveCard,
     GameStateView,
 } from "../types/game";
 import { calculateDamage } from "../utils/rules.util";
