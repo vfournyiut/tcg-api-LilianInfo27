@@ -3,6 +3,8 @@ import {env} from "./env";
 import express from "express";
 import cors from "cors";
 import { Server as SocketIOServer } from 'socket.io';
+import swaggerUi from "swagger-ui-express";
+import { swaggerDocument } from "./docs";
 
 import { authRouter } from "./auth.route";
 
@@ -23,6 +25,12 @@ app.use(
 );
 
 app.use(express.json());
+
+// Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'TCG API Documentation',
+}));
 
 // Serve static files (Socket.io test client)
 app.use(express.static('public'));
