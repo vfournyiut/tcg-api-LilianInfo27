@@ -2,12 +2,14 @@ import {createServer} from "http";
 import {env} from "./env";
 import express from "express";
 import cors from "cors";
+import { Server as SocketIOServer } from 'socket.io';
 
 import { authRouter } from "./auth.route";
 
 import { prisma } from "./database";
 
 import { deckRouter } from "./deck.route";
+import { authenticateSocketToken } from './sockets/auth.socket';
 
 // Create Express app
 export const app = express();
@@ -73,13 +75,27 @@ app.get("/api/cards", async (_req, res) => {
     }
 });
 
-// Start server only if this file is run directly (not imported for tests)
+// Démarre le serveur HTTP et Socket.io si ce fichier est exécuté directement
 if (require.main === module) {
-    // Create HTTP server
+    // Crée le serveur HTTP et intègre Socket.io
     const httpServer = createServer(app);
 
+    const io = new SocketIOServer(httpServer, {
+        cors: {
+            origin: true,
+            credentials: true,
+        },
+    });
 
-    // Start server
+    io.use(authenticateSocketToken);
+
+    io.on('connection', (socket) => {
+        const { userId, email } = socket.data as { userId: number; email: string };
+        console.log(`🔌 Socket connected: ${socket.id} (userId=${userId}, email=${email})`);
+    });
+
+
+    // Démarre le serveur HTTP et Socket.io
     try {
         httpServer.listen(env.PORT, () => {
             console.log(`\n🚀 Server is running on http://localhost:${env.PORT}`);
