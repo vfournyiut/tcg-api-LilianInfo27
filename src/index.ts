@@ -4,12 +4,16 @@ import express from "express";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import { swaggerDocument } from "./docs";
+import { Server } from "socket.io";
 
 import { authRouter } from "./auth.route";
 
 import { prisma } from "./database";
 
 import { deckRouter } from "./deck.route";
+
+import { setupRoomSocket } from "./sockets/room.socket";
+import { setupGameSocket } from "./sockets/game.socket";
 
 // Create Express app
 export const app = express();
@@ -86,6 +90,17 @@ if (require.main === module) {
     // Create HTTP server
     const httpServer = createServer(app);
 
+    // Configure Socket.io
+    const io = new Server(httpServer, {
+        cors: {
+            origin: true,
+            credentials: true,
+        },
+    });
+
+    // Setup Socket.io handlers
+    setupRoomSocket(io);
+    setupGameSocket(io);
 
     // Start server
     try {
