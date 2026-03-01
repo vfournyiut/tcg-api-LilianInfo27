@@ -1,0 +1,131 @@
+openapi: 3.0.0
+info:
+  title: TCG API Documentation
+  version: 1.0.0
+  description: REST API for the Pokemon TCG project
+  contact:
+    name: API Team
+    email: api@example.com
+
+servers:
+  - url: http://localhost:3001
+    description: Development server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "JWT token from /api/auth/sign-in"
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: red
+        email:
+          type: string
+          format: email
+          example: red@example.com
+        createdAt:
+          type: string
+          format: date-time
+          example: 2024-01-15T10:00:00.000Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2024-01-15T10:00:00.000Z
+
+    Card:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 25
+        name:
+          type: string
+          example: Pikachu
+        hp:
+          type: integer
+          example: 35
+        attack:
+          type: integer
+          example: 55
+        type:
+          type: string
+          example: Electric
+        pokedexNumber:
+          type: integer
+          example: 25
+        imgUrl:
+          type: string
+          nullable: true
+          example: https://assets.pokemon.com/pikachu.png
+        createdAt:
+          type: string
+          format: date-time
+          example: 2024-01-15T10:00:00.000Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2024-01-15T10:00:00.000Z
+
+    Deck:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Starter Deck
+        userId:
+          type: integer
+          example: 1
+        cards:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 10
+              deckId:
+                type: integer
+                example: 1
+              cardId:
+                type: integer
+                example: 25
+              card:
+                $ref: '#/components/schemas/Card'
+        createdAt:
+          type: string
+          format: date-time
+          example: 2024-01-15T10:00:00.000Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2024-01-15T10:00:00.000Z
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Server error
+
+tags:
+  - name: Health
+    description: Health check
+  - name: Authentication
+    description: Authentication endpoints
+  - name: Cards
+    description: Cards catalog
+  - name: Decks
+    description: Deck management
