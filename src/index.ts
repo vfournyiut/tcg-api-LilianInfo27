@@ -1,4 +1,5 @@
 import {createServer} from "http";
+import { Server } from 'socket.io';
 import {env} from "./env";
 import express from "express";
 import cors from "cors";
@@ -11,6 +12,8 @@ import { authRouter } from "./auth.route";
 import { prisma } from "./database";
 
 import { deckRouter } from "./deck.route";
+import { authenticateSocketToken } from './sockets/auth.socket';
+import { registerMatchmakingHandlers } from './sockets/matchmaking.socket';
 
 import { setupRoomSocket } from "./sockets/room.socket";
 import { setupGameSocket } from "./sockets/game.socket";
@@ -89,6 +92,15 @@ app.get("/api/cards", async (_req, res) => {
 if (require.main === module) {
     // Create HTTP server
     const httpServer = createServer(app);
+    const io = new Server(httpServer, {
+        cors: {
+            origin: true,
+            credentials: true,
+        },
+    });
+
+    io.use(authenticateSocketToken);
+    registerMatchmakingHandlers(io);
 
     // Configure Socket.io
     const io = new Server(httpServer, {
