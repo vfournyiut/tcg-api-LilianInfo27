@@ -1,6 +1,6 @@
 let socket = null;
 
-// Sign in and auto-connect
+// Authentication
 async function signIn() {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
@@ -19,7 +19,7 @@ async function signIn() {
             body: JSON.stringify({email, password})
         });
 
-        // Check content type before parsing
+        // Vérifie que la réponse est bien du JSON (et pas une page d'erreur HTML)
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
             throw new Error('Server error: Expected JSON response but got HTML. Is the server running?');
@@ -33,7 +33,7 @@ async function signIn() {
 
         log(`✅ Signed in successfully! Token received.`, 'received');
 
-        // Set token and connect
+        // Récupère le token et connecte le socket
         document.getElementById('token').value = data.token;
         connectWithToken(data.token);
 
@@ -43,7 +43,7 @@ async function signIn() {
     }
 }
 
-// Connection handlers
+// Gestion des connexions
 function connectWithToken(token) {
     if (!token) {
         alert('Please enter a JWT token');
@@ -94,74 +94,88 @@ document.getElementById('disconnectBtn').addEventListener('click', () => {
 // Room events
 function getRooms() {
     if (!socket) return alert('Not connected');
-    log('➡️ getRooms', 'sent');
-    socket.emit('getRooms');
+    log('➡️ listWaitingRooms', 'sent');
+    socket.emit('listWaitingRooms', (response) => {
+        log(`⬅️ listWaitingRooms: ${JSON.stringify(response, null, 2)}`, 'received');
+    });
 }
 
 function createRoom() {
     if (!socket) return alert('Not connected');
-    const deckId = document.getElementById('createRoomDeckId').value;
+    const deckId = parseInt(document.getElementById('createRoomDeckId').value);
     if (!deckId) return alert('Deck ID required');
 
     const data = {deckId};
     log(`➡️ createRoom: ${JSON.stringify(data)}`, 'sent');
-    socket.emit('createRoom', data);
+    socket.emit('createRoom', data, (response) => {
+        log(`⬅️ createRoom: ${JSON.stringify(response, null, 2)}`, response.success ? 'received' : 'error');
+    });
 }
 
 function joinRoom() {
     if (!socket) return alert('Not connected');
-    const roomId = document.getElementById('joinRoomId').value;
-    const deckId = document.getElementById('joinRoomDeckId').value;
+    const roomId = parseInt(document.getElementById('joinRoomId').value);
+    const deckId = parseInt(document.getElementById('joinRoomDeckId').value);
     if (!roomId || !deckId) return alert('Room ID and Deck ID required');
 
-    const data = {roomId, deckId};
+    const data = {roomId, deckId, username: 'Player'};
     log(`➡️ joinRoom: ${JSON.stringify(data)}`, 'sent');
-    socket.emit('joinRoom', data);
+    socket.emit('joinRoom', data, (response) => {
+        log(`⬅️ joinRoom: ${JSON.stringify(response, null, 2)}`, response.success ? 'received' : 'error');
+    });
 }
 
 // Game events
 function drawCards() {
     if (!socket) return alert('Not connected');
-    const roomId = document.getElementById('drawCardsRoomId').value;
+    const roomId = parseInt(document.getElementById('drawCardsRoomId').value);
     if (!roomId) return alert('Room ID required');
 
     const data = {roomId};
     log(`➡️ drawCards: ${JSON.stringify(data)}`, 'sent');
-    socket.emit('drawCards', data);
+    socket.emit('drawCards', data, (response) => {
+        log(`⬅️ drawCards: ${JSON.stringify(response, null, 2)}`, response.success ? 'received' : 'error');
+    });
 }
 
 function playCard() {
     if (!socket) return alert('Not connected');
-    const roomId = document.getElementById('playCardRoomId').value;
+    const roomId = parseInt(document.getElementById('playCardRoomId').value);
     const cardIndex = parseInt(document.getElementById('playCardIndex').value);
     if (!roomId || isNaN(cardIndex)) return alert('Room ID and Card Index required');
 
     const data = {roomId, cardIndex};
     log(`➡️ playCard: ${JSON.stringify(data)}`, 'sent');
-    socket.emit('playCard', data);
+    socket.emit('playCard', data, (response) => {
+        log(`⬅️ playCard: ${JSON.stringify(response, null, 2)}`, response.success ? 'received' : 'error');
+    });
 }
 
 function attack() {
     if (!socket) return alert('Not connected');
-    const roomId = document.getElementById('attackRoomId').value;
+    const roomId = parseInt(document.getElementById('attackRoomId').value);
     if (!roomId) return alert('Room ID required');
 
     const data = {roomId};
     log(`➡️ attack: ${JSON.stringify(data)}`, 'sent');
-    socket.emit('attack', data);
+    socket.emit('attack', data, (response) => {
+        log(`⬅️ attack: ${JSON.stringify(response, null, 2)}`, response.success ? 'received' : 'error');
+    });
 }
 
 function endTurn() {
     if (!socket) return alert('Not connected');
-    const roomId = document.getElementById('endTurnRoomId').value;
+    const roomId = parseInt(document.getElementById('endTurnRoomId').value);
     if (!roomId) return alert('Room ID required');
 
     const data = {roomId};
     log(`➡️ endTurn: ${JSON.stringify(data)}`, 'sent');
-    socket.emit('endTurn', data);
+    socket.emit('endTurn', data, (response) => {
+        log(`⬅️ endTurn: ${JSON.stringify(response, null, 2)}`, response.success ? 'received' : 'error');
+    });
 }
 
-// Logging
+// Logs
 function log(message, type = 'info') {
     const logs = document.getElementById('logs');
     const entry = document.createElement('div');
